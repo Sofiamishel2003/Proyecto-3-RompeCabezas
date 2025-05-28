@@ -2,11 +2,11 @@
   "puzzle": {
     "id": 2,
     "numPieces": 12,
+    "name": "Frozen",
     "groups": [
       {
         "id": 1,
-        "connections": [
-        ],
+        "located": [],
         "pieces": [
           {
             "id": 1,

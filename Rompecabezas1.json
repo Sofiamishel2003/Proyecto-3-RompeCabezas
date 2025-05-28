@@ -2,10 +2,11 @@
   "puzzle": {
     "id": 1,
     "numPieces": 10,
+    "name": "Zorros",
     "groups": [
       {
         "id": 1,
-        "connections": [
+        "located": [
                     { "to": 2, "direction": "Right" }
                     ],
         "pieces": [
@@ -39,7 +40,7 @@
       
       {
         "id": 2,
-        "connections": [
+        "located": [
                     { "to": 2, "direction": "Right" }
                     ],
         "pieces": [
