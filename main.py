@@ -112,7 +112,6 @@ def update_piece_is_lost(puzzle_id, group_id, piece_id, is_lost):
         else:
             print("No se encontró la pieza para actualizar.")
 
-"""
 # --- Uso del script principal ---
 if __name__ == "__main__":
     try:
@@ -153,4 +152,5 @@ if __name__ == "__main__":
     finally:
         driver.close()
 
+"""
 
