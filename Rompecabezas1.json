@@ -41,7 +41,7 @@
       {
         "id": 2,
         "located": [
-                    { "to": 2, "direction": "Right" }
+                    { "to": 3, "direction": "Right" }
                     ],
         "pieces": [
           {

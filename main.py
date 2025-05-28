@@ -2,9 +2,9 @@
 from neo4j import GraphDatabase
 import json
 
-URI      = "neo4j+s://7452e2ce.databases.neo4j.io"
+URI      = "neo4j+s://b9d0c74d.databases.neo4j.io"
 USER     = "neo4j"
-PASSWORD = "lcHisdIk814broKN5cAzsHR_aX9uLUdMea9ugBYhRWg"
+PASSWORD = "5IrhtBiij9BQyPE1-mKbQQsMa6PmxvxRMyGvGhHaDVQ"
 
 driver = GraphDatabase.driver(URI, auth=(USER, PASSWORD))
 
@@ -35,7 +35,7 @@ class PuzzleImporter:
         pname = puzzle["name"]
         numPieces = puzzle["numPieces"]
 
-        # Puzzle único
+        # Crear el puzzle
         tx.run("""
             MERGE (p:Puzzle {id: $pid})
             SET p.name = $name, p.numPieces = $numPieces
@@ -44,7 +44,7 @@ class PuzzleImporter:
         for group in puzzle["groups"]:
             gid = group["id"]
 
-            # Group único por id + puzzleId
+            # Crear grupo con ID contextual (temporalmente con puzzleId)
             tx.run("""
                 MERGE (g:Group {id: $gid, puzzleId: $pid})
                 WITH g
@@ -52,20 +52,20 @@ class PuzzleImporter:
                 MERGE (g)-[:CONTAINED]->(p)
             """, gid=gid, pid=pid)
 
-            # Piezas
+            # Crear piezas con contexto de puzzle y grupo (temporalmente)
             for piece in group["pieces"]:
                 piece_id = piece["id"]
                 isLost = piece["isLost"]
 
                 tx.run("""
-                    MERGE (pc:Piece {id: $pid, groupId: $gid, puzzleId: $puzid})
+                    MERGE (pc:Piece {id: $piece_id, groupId: $gid, puzzleId: $pid})
                     SET pc.isLost = $isLost
                     WITH pc
-                    MATCH (g:Group {id: $gid, puzzleId: $puzid})
+                    MATCH (g:Group {id: $gid, puzzleId: $pid})
                     MERGE (pc)-[:BELONGS]->(g)
-                """, pid=piece_id, gid=gid, puzid=pid, isLost=isLost)
+                """, piece_id=piece_id, gid=gid, pid=pid, isLost=isLost)
 
-            # Conexiones
+            # Conexiones entre piezas del mismo grupo
             for piece in group["pieces"]:
                 from_id = piece["id"]
                 for conn in piece.get("connections", []):
@@ -73,26 +73,46 @@ class PuzzleImporter:
                     direction = conn["direction"]
 
                     tx.run("""
-                        MATCH (a:Piece {id: $from_id, groupId: $gid, puzzleId: $pid}),
+                        MATCH 
+                            (a:Piece {id: $from_id, groupId: $gid, puzzleId: $pid}),
                             (b:Piece {id: $to_id, groupId: $gid, puzzleId: $pid})
                         MERGE (a)-[:CONNECTS {direction: $direction}]->(b)
                     """, from_id=from_id, to_id=to_id, gid=gid, pid=pid, direction=direction)
 
-        # Relaciones LOCATED entre grupos (si hay más de uno)
-        if len(puzzle["groups"]) > 1:
-            for group in puzzle["groups"]:
-                from_gid = group["id"]
-                for loc in group.get("located", []):
-                    to_gid = loc["to"]
-                    direction = loc["direction"]
-                    tx.run("""
-                        MATCH (a:Group {id: $from_gid, puzzleId: $pid}),
-                            (b:Group {id: $to_gid, puzzleId: $pid})
-                        MERGE (a)-[:LOCATED {direction: $direction}]->(b)
-                    """, from_gid=from_gid, to_gid=to_gid, pid=pid, direction=direction)
+        # Relaciones LOCATED entre grupos del mismo puzzle
+        for group in puzzle["groups"]:
+            from_gid = group["id"]
+            for loc in group.get("located", []):
+                to_gid = loc["to"]
+                direction = loc["direction"]
 
+                tx.run("""
+                    MATCH 
+                        (a:Group {id: $from_gid, puzzleId: $pid}),
+                        (b:Group {id: $to_gid, puzzleId: $pid})
+                    MERGE (a)-[:LOCATED {direction: $direction}]->(b)
+                """, from_gid=from_gid, to_gid=to_gid, pid=pid, direction=direction)
 
+        # 🔥 Limpiar propiedades temporales
+        tx.run("MATCH (g:Group {puzzleId: $pid}) REMOVE g.puzzleId", pid=pid)
+        tx.run("MATCH (pc:Piece {puzzleId: $pid}) REMOVE pc.puzzleId, pc.groupId", pid=pid)
 
+def update_piece_is_lost(puzzle_id, group_id, piece_id, is_lost):
+    with driver.session() as session:
+        result = session.run("""
+            MATCH (pc:Piece {id: $piece_id})
+            MATCH (pc)-[:BELONGS]->(g:Group {id: $group_id})-[:CONTAINED]->(p:Puzzle {id: $puzzle_id})
+            SET pc.isLost = $is_lost
+            RETURN pc.id AS id, pc.isLost AS isLost
+        """, piece_id=piece_id, group_id=group_id, puzzle_id=puzzle_id, is_lost=is_lost)
+        
+        record = result.single()
+        if record:
+            print(f"Pieza {record['id']} actualizada: isLost = {record['isLost']}")
+        else:
+            print("No se encontró la pieza para actualizar.")
+
+"""
 # --- Uso del script principal ---
 if __name__ == "__main__":
     try:
@@ -104,8 +124,29 @@ if __name__ == "__main__":
 
         importer = PuzzleImporter(URI, USER, PASSWORD)
         importer.import_puzzle(puzzle_data)
-        print("Rompecabezas importado exitosamente.")
+        print("Rompecabezas 2 importado exitosamente.")
+        # Cargar el JSON 2
+        with open("Rompecabezas1.json", "r", encoding="utf-8") as f:
+            puzzle_data = json.load(f)
+
+        importer = PuzzleImporter(URI, USER, PASSWORD)
+        importer.import_puzzle(puzzle_data)
+        print("Rompecabezas 1 importado exitosamente.")
         importer.close()
+
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        driver.close()
+
+"""
+
+if __name__ == "__main__":
+    try:
+        test_connection()
+
+        # Cambiar isLost de una pieza (ejemplo)
+        update_piece_is_lost(puzzle_id=1, group_id=1, piece_id=3, is_lost=True)
 
     except Exception as e:
         print(f"Error: {e}")
