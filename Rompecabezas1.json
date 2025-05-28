@@ -1,107 +1,89 @@
 {
   "puzzle": {
-    "numPieces": 12,
+    "id": 1,
+    "numPieces": 10,
     "groups": [
       {
-        "id": "G1",
+        "id": 1,
+        "connections": [
+                    { "to": 2, "direction": "Right" }
+                    ],
         "pieces": [
           {
-            "id": "P1",
+            "id": 1,
             "isLost": false,
             "connections": [
-              { "to": "P2", "direction": "Right" }
+              { "to": 2, "direction": "Down" }
             ]
           },
           {
-            "id": "P2",
-            "isLost": false,
-            "connections": [
-              { "to": "P1", "direction": "Left" },
-              { "to": "P3", "direction": "Right" }
-            ]
+            "id": 2,
+            "isLost": false
           },
           {
-            "id": "P3",
+            "id": 3,
             "isLost": true,
             "connections": [
-              { "to": "P2", "direction": "Left" },
-              { "to": "P4", "direction": "Bottom" }
+              { "to": 2, "direction": "Up" }
             ]
           },
           {
-            "id": "P4",
-            "isLost": false,
+            "id": 4,
+            "isLost": true,
             "connections": [
-              { "to": "P3", "direction": "Top" }
+              { "to": 3, "direction": "Left" }
             ]
           }
         ]
       },
+      
       {
-        "id": "G2",
+        "id": 2,
+        "connections": [
+                    { "to": 2, "direction": "Right" }
+                    ],
         "pieces": [
           {
-            "id": "P5",
+            "id": 1,
             "isLost": false,
             "connections": [
-              { "to": "P6", "direction": "Right" }
+              { "to": 2, "direction": "Down" }
             ]
           },
           {
-            "id": "P6",
+            "id": 2,
+            "isLost": false
+          },
+          {
+            "id": 3,
             "isLost": false,
             "connections": [
-              { "to": "P5", "direction": "Left" },
-              { "to": "P7", "direction": "Right" }
+              { "to": 2, "direction": "Up" }
+            ]
+          }     
+        ]
+      },
+      {
+        "id": 3,
+        "pieces": [
+          {
+            "id": 1,
+            "isLost": false,
+            "connections": [
+              { "to": 2, "direction": "Down" }
             ]
           },
           {
-            "id": "P7",
-            "isLost": false,
-            "connections": [
-              { "to": "P6", "direction": "Left" },
-              { "to": "P8", "direction": "Right" }
-            ]
+            "id": 2,
+            "isLost": false
           },
           {
-            "id": "P8",
+            "id": 3,
             "isLost": false,
             "connections": [
-              { "to": "P7", "direction": "Left" },
-              { "to": "P9", "direction": "Bottom" }
+              { "to": 2, "direction": "Left" }
             ]
-          },
-          {
-            "id": "P9",
-            "isLost": false,
-            "connections": [
-              { "to": "P8", "direction": "Top" },
-              { "to": "P10", "direction": "Right" }
-            ]
-          },
-          {
-            "id": "P10",
-            "isLost": true,
-            "connections": [
-              { "to": "P9", "direction": "Left" },
-              { "to": "P11", "direction": "Right" }
-            ]
-          },
-          {
-            "id": "P11",
-            "isLost": false,
-            "connections": [
-              { "to": "P10", "direction": "Left" },
-              { "to": "P12", "direction": "Bottom" }
-            ]
-          },
-          {
-            "id": "P12",
-            "isLost": false,
-            "connections": [
-              { "to": "P11", "direction": "Top" }
-            ]
-          }
+          }     
         ]
       }
     ]
