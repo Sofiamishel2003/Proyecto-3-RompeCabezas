@@ -175,7 +175,7 @@ class PuzzleSolver:
             if neighbor_id and edge_key not in visited_edges:
                 visited_edges.add(edge_key)
                 instructions.append(
-                    f"Coloca la pieza {from_id}-{group_id} en dirección {direction} hacia la pieza {to_id}-{group_id}"
+                    f"Coloca la pieza {to_id}-{group_id} en dirección {direction} de la pieza {from_id}-{group_id}"
                 )
                 PuzzleSolver._dfs_group_pieces(
                     tx, puzzle_id, group_id, neighbor_id, visited_pieces, instructions, visited_edges
@@ -187,7 +187,9 @@ if __name__ == "__main__":
         test_connection()
 
         solver = PuzzleSolver(URI, USER, PASSWORD)
-        steps = solver.solve_puzzle_from(puzzle_id=2, group_id=1, piece_id=2)
+        steps = solver.solve_puzzle_from(puzzle_id=1, group_id=1, piece_id=1)
+        print("Importante: Todas las instrucciones de ensamblaje asumen que los números en las piezas están orientados correctamente, es decir, en la posición normal de lectura.")
+        print("Asegúrate de colocar cada pieza manteniendo esta orientación, ya que las direcciones como arriba, abajo, izquierda o derecha se basan en ella.")
         for step in steps:
             print(step)
         solver.close()

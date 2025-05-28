@@ -93,7 +93,7 @@ class PuzzleImporter:
                     MERGE (a)-[:LOCATED {direction: $direction}]->(b)
                 """, from_gid=from_gid, to_gid=to_gid, pid=pid, direction=direction)
 
-        # 🔥 Limpiar propiedades temporales
+        #  Limpiar propiedades temporales
         tx.run("MATCH (g:Group {puzzleId: $pid}) REMOVE g.puzzleId", pid=pid)
         tx.run("MATCH (pc:Piece {puzzleId: $pid}) REMOVE pc.puzzleId, pc.groupId", pid=pid)
 
@@ -152,3 +152,5 @@ if __name__ == "__main__":
         print(f"Error: {e}")
     finally:
         driver.close()
+
+
