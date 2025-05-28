@@ -1,0 +1,109 @@
+{
+  "puzzle": {
+    "numPieces": 12,
+    "groups": [
+      {
+        "id": "G1",
+        "pieces": [
+          {
+            "id": "P1",
+            "isLost": false,
+            "connections": [
+              { "to": "P2", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P2",
+            "isLost": false,
+            "connections": [
+              { "to": "P1", "direction": "Left" },
+              { "to": "P3", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P3",
+            "isLost": true,
+            "connections": [
+              { "to": "P2", "direction": "Left" },
+              { "to": "P4", "direction": "Bottom" }
+            ]
+          },
+          {
+            "id": "P4",
+            "isLost": false,
+            "connections": [
+              { "to": "P3", "direction": "Top" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "G2",
+        "pieces": [
+          {
+            "id": "P5",
+            "isLost": false,
+            "connections": [
+              { "to": "P6", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P6",
+            "isLost": false,
+            "connections": [
+              { "to": "P5", "direction": "Left" },
+              { "to": "P7", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P7",
+            "isLost": false,
+            "connections": [
+              { "to": "P6", "direction": "Left" },
+              { "to": "P8", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P8",
+            "isLost": false,
+            "connections": [
+              { "to": "P7", "direction": "Left" },
+              { "to": "P9", "direction": "Bottom" }
+            ]
+          },
+          {
+            "id": "P9",
+            "isLost": false,
+            "connections": [
+              { "to": "P8", "direction": "Top" },
+              { "to": "P10", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P10",
+            "isLost": true,
+            "connections": [
+              { "to": "P9", "direction": "Left" },
+              { "to": "P11", "direction": "Right" }
+            ]
+          },
+          {
+            "id": "P11",
+            "isLost": false,
+            "connections": [
+              { "to": "P10", "direction": "Left" },
+              { "to": "P12", "direction": "Bottom" }
+            ]
+          },
+          {
+            "id": "P12",
+            "isLost": false,
+            "connections": [
+              { "to": "P11", "direction": "Top" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
