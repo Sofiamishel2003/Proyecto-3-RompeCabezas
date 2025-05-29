@@ -1,0 +1,86 @@
+{
+  "puzzle": {
+    "id": 3,
+    "numPieces": 10,
+    "name": "Triceratops",
+    "groups": [
+      {
+        "id": 1,
+        "located": [],
+        "pieces": [
+          {
+            "id": 1,
+            "isLost": false,
+            "connections": [
+              { "to": 2, "direction": "Right" }
+            ]
+          },
+          {
+            "id": 2,
+            "isLost": false,
+            "connections": [
+              { "to": 4, "direction": "Right" },
+              { "to": 5, "direction": "Right" }
+            ]
+          },
+          {
+            "id": 3,
+            "isLost": false,
+            "connections": [
+              { "to": 2, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 4,
+            "isLost": false,
+            "connections": [
+            ]
+          },
+          {
+            "id": 5,
+            "isLost": true,
+            "connections": [
+              { "to": 4, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 6,
+            "isLost": false,
+            "connections": [
+              { "to": 5, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 7,
+            "isLost": false,
+            "connections": [
+              { "to": 4, "direction": "Left" }
+            ]
+          },
+          {
+            "id": 8,
+            "isLost": false,
+            "connections": [
+              { "to": 5, "direction": "Left" },
+              { "to": 7, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 9,
+            "isLost": false,
+            "connections": [
+              { "to": 8, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 10,
+            "isLost": false,
+            "connections": [
+              { "to": 8, "direction": "Left" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
