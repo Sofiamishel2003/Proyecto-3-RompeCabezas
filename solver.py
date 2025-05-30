@@ -36,7 +36,7 @@ class PuzzleSolver:
                 visited_groups,
                 visited_pieces,
                 instructions,
-                missing_pieces
+                missing_pieces,
             )
             # Revisa si hay otros grupos no visitados
             extra_groups = session.run("""
@@ -56,7 +56,9 @@ class PuzzleSolver:
                     """, gid=gid)
 
                     piece_rec = piece_result.single()
+                    
                     if piece_rec:
+                        
                         pid = piece_rec["pid"]
                         instructions.append(f"Grupo {gid} no estaba conectado. Empezando desde pieza {pid}.")
                         session.execute_read(
@@ -67,7 +69,7 @@ class PuzzleSolver:
                             visited_groups,
                             visited_pieces,
                             instructions,
-                            missing_pieces
+                            missing_pieces,
                         )
 
             # Lista de piezas perdidas
@@ -76,6 +78,26 @@ class PuzzleSolver:
                 for mp in missing_pieces:
                     instructions.append(f"Pieza {mp[0]} - Grupo {mp[1]}")
 
+            # Piezas no perdidas no conectadas
+            present_pieces_raw = session.run("""
+                        MATCH (p:Piece)-[:BELONGS]->(g:Group)-[:CONTAINED]->(pz:Puzzle {id: $puzzle_id})
+                        WHERE NOT p.isLost
+                        RETURN p.id AS pid, g.id AS gid
+                    """,puzzle_id=puzzle_id)
+            connected_pieces = []
+            present_pieces = []
+            for p in present_pieces_raw:
+                present_pieces.append((p["gid"],p["pid"]))
+            for c in visited_pieces:
+                connected_pieces.append((c[1],c[2]))
+            
+            diff = list(set(present_pieces) - set(connected_pieces))
+            print(diff)
+            if len(diff)>0:
+                instructions.append("Piezas sin Coneccion identificada")
+                for d in diff:
+                    instructions.append(f"Grupo {d[0]} pieza {d[1]} no tiene conecciones")
+            
             instructions.append("RompeCabezas resuelto.")
             return instructions
 
@@ -102,6 +124,7 @@ class PuzzleSolver:
             key = (puzzle_id, group_id, lost_id)
             if key not in visited_pieces:
                 missing_pieces.append((lost_id, group_id))
+
         # Anotar grupo terminado
         instructions.append(f"Grupo {group_id} terminado.")
         # Buscar grupos adyacentes por LOCATED dentro del mismo puzzle
