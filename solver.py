@@ -102,6 +102,82 @@ class PuzzleSolver:
             key = (puzzle_id, group_id, lost_id)
             if key not in visited_pieces:
                 missing_pieces.append((lost_id, group_id))
+        # Detectar conexiones a piezas perdidas desde piezas exploradas
+        extra_conns = tx.run("""
+            MATCH (p1:Piece)-[r:CONNECTS]->(p2:Piece)
+            WHERE (p1)-[:BELONGS]->(:Group {id: $group_id}) 
+              AND (p2)-[:BELONGS]->(:Group {id: $group_id}) 
+              AND NOT p1.isLost AND p2.isLost
+            RETURN p1.id AS from_id, p2.id AS to_id, r.direction AS direction
+        """, group_id=group_id)
+
+        for record in extra_conns:
+            from_id = record["from_id"]
+            to_id = record["to_id"]
+            direction = record["direction"]
+            key_from = (puzzle_id, group_id, from_id)
+            key_to = (puzzle_id, group_id, to_id)
+
+            if key_from in visited_pieces and key_to not in visited_pieces:
+                instructions.append(
+                    f"(Conexión faltante) Coloca la pieza {to_id}-{group_id} en dirección {direction} de la pieza {from_id}-{group_id} (pieza perdida)"
+                )
+                # Verificar piezas no exploradas que están conectadas solo a piezas perdidas o no conectadas a nadie
+        unvisited_result = tx.run("""
+            MATCH (g:Group {id: $group_id})<-[:BELONGS]-(p:Piece)
+            WHERE NOT p.isLost
+            RETURN p.id AS pid
+        """, group_id=group_id)
+
+        for record in unvisited_result:
+            pid = record["pid"]
+            key = (puzzle_id, group_id, pid)
+            if key not in visited_pieces:
+                # ¿Tiene alguna conexión válida?
+                conn_check = tx.run("""
+                    OPTIONAL MATCH (p:Piece {id: $pid})-[:CONNECTS]->(o1:Piece)
+                    WHERE (o1)-[:BELONGS]->(:Group {id: $group_id}) AND NOT o1.isLost
+
+                    OPTIONAL MATCH (o2:Piece)-[:CONNECTS]->(p:Piece {id: $pid})
+                    WHERE (o2)-[:BELONGS]->(:Group {id: $group_id}) AND NOT o2.isLost
+
+                    RETURN COUNT(DISTINCT o1) + COUNT(DISTINCT o2) AS valid_connections
+                """, pid=pid, group_id=group_id)
+
+                if conn_check.single()["valid_connections"] == 0:
+                    instructions.append(
+                        f"Pieza {pid}-{group_id} no pudo colocarse porque está aislada o solo conectada a piezas perdidas."
+                    )
+
+        # Detectar piezas no exploradas que están conectadas HACIA piezas perdidas
+        inferred_from_lost = tx.run("""
+            MATCH (from:Piece)-[r:CONNECTS]->(to:Piece)
+            WHERE (from)-[:BELONGS]->(:Group {id: $group_id})
+              AND (to)-[:BELONGS]->(:Group {id: $group_id})
+              AND from.isLost = false AND to.isLost = true
+            RETURN from.id AS pid, to.id AS lost_id, r.direction AS dir
+        """, group_id=group_id)
+
+        for record in inferred_from_lost:
+            pid = record["pid"]
+            lost_id = record["lost_id"]
+            direction = record["dir"]
+            key = (puzzle_id, group_id, pid)
+
+            if key not in visited_pieces:
+                # Invertir dirección
+                inverted = {
+                    "Up": "Down",
+                    "Down": "Up",
+                    "Left": "Right",
+                    "Right": "Left"
+                }.get(direction, f"(inverso de {direction})")
+                
+                instructions.append(
+                    f"(Inferida) Coloca la pieza {pid}-{group_id} en dirección {inverted} de la pieza perdida {lost_id}-{group_id}"
+                )
+                visited_pieces.add(key)
+
         # Anotar grupo terminado
         instructions.append(f"Grupo {group_id} terminado.")
         # Buscar grupos adyacentes por LOCATED dentro del mismo puzzle
@@ -187,7 +263,7 @@ if __name__ == "__main__":
         test_connection()
 
         solver = PuzzleSolver(URI, USER, PASSWORD)
-        steps = solver.solve_puzzle_from(puzzle_id=1, group_id=1, piece_id=1)
+        steps = solver.solve_puzzle_from(puzzle_id=3, group_id=1, piece_id=1)
         print("Importante: Todas las instrucciones de ensamblaje asumen que los números en las piezas están orientados correctamente, es decir, en la posición normal de lectura.")
         print("Asegúrate de colocar cada pieza manteniendo esta orientación, ya que las direcciones como arriba, abajo, izquierda o derecha se basan en ella.")
         for step in steps:

@@ -118,19 +118,19 @@ if __name__ == "__main__":
         test_connection()
 
         # Cargar el JSON 
-        with open("Rompecabezas2.json", "r", encoding="utf-8") as f:
+        with open("Caracol.json", "r", encoding="utf-8") as f:
             puzzle_data = json.load(f)
 
         importer = PuzzleImporter(URI, USER, PASSWORD)
         importer.import_puzzle(puzzle_data)
-        print("Rompecabezas 2 importado exitosamente.")
+        print("Rompecabezas Caracol importado exitosamente.")
         # Cargar el JSON 2
-        with open("Rompecabezas1.json", "r", encoding="utf-8") as f:
+        with open("dino.json", "r", encoding="utf-8") as f:
             puzzle_data = json.load(f)
 
         importer = PuzzleImporter(URI, USER, PASSWORD)
         importer.import_puzzle(puzzle_data)
-        print("Rompecabezas 1 importado exitosamente.")
+        print("Rompecabezas Dino importado exitosamente.")
         importer.close()
 
     except Exception as e:

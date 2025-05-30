@@ -1,0 +1,81 @@
+{
+  "puzzle": {
+    "id": 4,
+    "numPieces": 10,
+    "name": "Carcol",
+    "groups": [
+      {
+        "id": 1,
+        "located": [],
+        "pieces": [
+          {
+            "id": 1,
+            "isLost": false,
+            "connections": [
+              { "to": 2, "direction": "Left" }
+            ]
+          },
+          {
+            "id": 2,
+            "isLost": false,
+            "connections": [
+              { "to": 3, "direction": "Left" },
+              { "to": 8, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 3,
+            "isLost": false,
+            "connections": [
+              { "to": 4, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 4,
+            "isLost": false
+          },
+          {
+            "id": 5,
+            "isLost": false,
+            "connections": [
+              { "to": 4, "direction": "Left" }
+            ]
+          },
+          {
+            "id": 6,
+            "isLost": false,
+            "connections": [
+              { "to": 5, "direction": "Left" }
+            ]
+          },
+          {
+            "id": 7,
+            "isLost": false,
+            "connections": [
+              { "to": 6, "direction": "Up" }
+            ]
+          },
+          {
+            "id": 8,
+            "isLost": false,
+            "connections": [
+              { "to": 7, "direction": "Right" },
+              { "to": 9, "direction": "Left" }
+            ]
+          },
+          {
+            "id": 9,
+            "isLost": false,
+            "connections": [
+              { "to": 10, "direction": "Right" }
+            ]
+          },
+          {
+            "id": 10,
+            "isLost": false
+          }
+        ]
+      }
+    ]
+  }
+}
